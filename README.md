@@ -150,3 +150,10 @@ Wake on LAN (WOL) does not work and I will not fix that because it is beyound th
 **Disclaimer**
 
 Downloading and executing scripts from the internet may harm your computer. Make sure to check the source of the scripts before executing them!
+
+## TODO:
+1. implement LDAP
+2. Implement MFA
+3. Record SSH & RDP sessions
+4. Limit clipboard size for text only
+5. Randomize passwords and print list after composing
