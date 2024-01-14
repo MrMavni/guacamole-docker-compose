@@ -131,6 +131,7 @@ services:
       POSTGRES_HOSTNAME: postgres
       POSTGRES_PASSWORD: 'ChooseYourOwnPasswordHere1234'
       POSTGRES_USER: guacamole_user
+      TOTP_ENABLED: 'true'
     image: guacamole/guacamole
     links:
     - guacd
@@ -161,4 +162,6 @@ services:
    - guacamole
    networks:
      guacnetwork_compose:
+   environment:
+     - TOTP_ENABLED="true"
 ####################################################################################
