@@ -146,7 +146,7 @@ services:
     restart: always
     volumes:
     - ./extensions/:/opt/guacamole/extensions:rw
-    - ./record:/record:rw
+    - ./record:/record:ro
 
 ########### optional ##############
   # nginx
