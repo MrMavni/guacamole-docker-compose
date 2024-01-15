@@ -132,7 +132,7 @@ services:
       POSTGRES_PASSWORD: 'ChooseYourOwnPasswordHere1234'
       POSTGRES_USER: guacamole_user
       TOTP_ENABLED: 'true'
-      RECORDING_SEARCH_PATH: '/opt/guacamole/record'
+      RECORDING_SEARCH_PATH: '/record'
     image: guacamole/guacamole
     links:
     - guacd
