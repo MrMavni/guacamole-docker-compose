@@ -157,6 +157,7 @@ services:
    - ./nginx/templates:/etc/nginx/templates:ro
    - ./nginx/ssl/self.cert:/etc/nginx/ssl/self.cert:ro
    - ./nginx/ssl/self-ssl.key:/etc/nginx/ssl/self-ssl.key:ro
+   - ./record:/var/lib/guacamole/recordings:ro
    ports:
    - 443:443
    links:
