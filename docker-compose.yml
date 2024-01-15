@@ -102,7 +102,7 @@ services:
     restart: always
     volumes:
     - ./drive:/drive:rw
-    - ./record:/record:rw
+    - ./record:/opt/guacamole/record:rw
   # postgres
   postgres:
     container_name: postgres_guacamole_compose
