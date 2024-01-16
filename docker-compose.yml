@@ -135,11 +135,12 @@ services:
       TOTP_ENABLED: 'true'
       RECORDING_SEARCH_PATH: '/record'
       LDAP_HOSTNAME: 10.0.1.10
-      LDAP_USER_BASE_DN: CN=Guacamole-Users,OU=Groups,OU=eslab.local,DC=eslab,DC=local
+      LDAP_USER_BASE_DN: DC=eslab,DC=local
       LDAP_SEARCH_BIND_DN: CN=ldap,CN=Users,DC=eslab,DC=local
       LDAP_SEARCH_BIND_PASSWORD: Password1
       LDAP_USERNAME_ATTRIBUTE: sAMAccountName
       POSTGRESQL_AUTO_CREATE_ACCOUNTS: 'true'
+      LDAP_USER_SEARCH_FILTER: (&(objectClass=posixAccount)(|(groupMembership=cn=Guacamole-Users,OU=Groups,OU=eslab.local,DC=eslab,DC=local)))
     image: guacamole/guacamole
     links:
     - guacd
