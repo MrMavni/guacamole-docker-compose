@@ -140,6 +140,7 @@ services:
       LDAP_SEARCH_BIND_PASSWORD: Password1
       LDAP_USERNAME_ATTRIBUTE: sAMAccountName
       POSTGRESQL_AUTO_CREATE_ACCOUNTS: 'true'
+      LDAP_GROUP_NAME_ATTRIBUTE: 'Guacamole-Users'
     image: guacamole/guacamole
     links:
     - guacd
