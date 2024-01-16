@@ -103,6 +103,7 @@ services:
     volumes:
     - ./drive:/drive:rw
     - ./record:/record:rw
+  
   # postgres
   postgres:
     container_name: postgres_guacamole_compose
@@ -133,6 +134,11 @@ services:
       POSTGRES_USER: guacamole_user
       TOTP_ENABLED: 'true'
       RECORDING_SEARCH_PATH: '/record'
+      LDAP_HOSTNAME: "10.0.1.10"
+      LDAP_USER_BASE_DN: "CN=Users,DC=eslab,DC=local"
+      LDAP_SEARCH_BIND_DN: "CN=ldap,CN=Users,DC=eslab,DC=local"
+      LDAP_SEARCH_BIND_PASSWORD: "Password1"
+      LDAP_USERNAME_ATTRIBUTE: "sAMAccountName"
     image: guacamole/guacamole
     links:
     - guacd
@@ -168,9 +174,4 @@ services:
      guacnetwork_compose:
    environment:
      - TOTP_ENABLED="true"
-     - LDAP_HOSTNAME="10.0.1.10"
-     - LDAP_USER_BASE_DN="CN=Users,DC=eslab,DC=local"
-     - LDAP_SEARCH_BIND_DN="CN=ldap,CN=Users,DC=eslab,DC=local"
-     - LDAP_SEARCH_BIND_PASSWORD="Password1"
-     - LDAP_USERNAME_ATTRIBUTE="sAMAccountName"
 ####################################################################################
