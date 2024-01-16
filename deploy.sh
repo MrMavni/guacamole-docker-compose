@@ -69,8 +69,6 @@ mkdir ./init >/dev/null 2>&1
 mkdir -p ./nginx/ssl >/dev/null 2>&1
 chmod -R +x ./init
 docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --postgresql > ./init/initdb.sql
-sudo chown -R 1000:1001 ./record/
-sudo chmod -R 2750 ./record/
 echo "done"
 echo "Creating SSL certificates"
 openssl req -nodes -newkey rsa:2048 -new -x509 -keyout nginx/ssl/self-ssl.key -out nginx/ssl/self.cert -subj '/C=DE/ST=BY/L=Hintertupfing/O=Dorfwirt/OU=Theke/CN=www.createyourown.domain/emailAddress=docker@createyourown.domain'
@@ -84,6 +82,9 @@ docker-compose -f "$DOCKER_COMPOSE_FILE" down
 # Deploy the updated Docker Compose configuration
 echo "Deploying updated Docker Compose configuration..."
 docker-compose -f "$DOCKER_COMPOSE_FILE" up -d
+
+sudo chown -R 1000:1001 ./record/
+sudo chmod -R 2750 ./record/
 
 # Print all generated credentials
 echo "Generated Credentials:"
