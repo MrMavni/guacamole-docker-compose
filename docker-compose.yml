@@ -139,6 +139,7 @@ services:
       LDAP_SEARCH_BIND_DN: CN=ldap,CN=Users,DC=eslab,DC=local
       LDAP_SEARCH_BIND_PASSWORD: Password1
       LDAP_USERNAME_ATTRIBUTE: sAMAccountName
+      POSTGRESQL_AUTO_CREATE_ACCOUNTS: 'true'
     image: guacamole/guacamole
     links:
     - guacd
