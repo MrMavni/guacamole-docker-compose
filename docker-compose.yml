@@ -139,9 +139,9 @@ services:
       LDAP_SEARCH_BIND_DN: CN=ldap,CN=Users,DC=eslab,DC=local
       LDAP_SEARCH_BIND_PASSWORD: Password1
       LDAP_USERNAME_ATTRIBUTE: sAMAccountName
-      LDAP_GROUP_BASE_DN: CN=Guacamole-Users,OU=Groups,OU=eslab.local,DC=eslab,DC=local
+      LDAP_GROUP_BASE_DN: OU=Groups,OU=eslab.local,DC=eslab,DC=local
       POSTGRESQL_AUTO_CREATE_ACCOUNTS: 'true'
-      #LDAP_USER_SEARCH_FILTER: (&(objectClass=posixAccount)(|(groupMembership=cn=Guacamole-Users,OU=Groups,OU=eslab.local,DC=eslab,DC=local)))
+      LDAP_USER_SEARCH_FILTER: (|(memberOf=CN=Guacamole-Users,OU=Groups,OU=eslab.local,DC=eslab,DC=local))
     image: guacamole/guacamole
     links:
     - guacd
