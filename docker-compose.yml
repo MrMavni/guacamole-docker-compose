@@ -168,4 +168,10 @@ services:
      guacnetwork_compose:
    environment:
      - TOTP_ENABLED="true"
+     - LDAP-HOSTNAME="10.0.1.10"
+     - LDAP-USER-BASE-DN="CN=Users,DC=eslab,DC=local"
+     - LDAP-SEARCH-BIND-DN="CN=ldap,CN=Users,DC=eslab,DC=local"
+     - LDAP-SEARCH-BIND-PASSWORD="Password1"
+     - LDAP-USERNAME-ATTRIBUTE="sAMAccountName"
+     - LDAP-
 ####################################################################################
