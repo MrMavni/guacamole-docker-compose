@@ -8,18 +8,44 @@ It supports RDP, SSH, Telnet and VNC and is the fastest HTML5 gateway I know. Ch
 
 ## Prerequisites
 You need a working **docker** installation and **docker-compose** running on your machine.
+For Ubuntu, use the following to install Docker from the official repo
 
+~~~bash
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+~~~
+
+For CentOS use the following instructions:
+https://docs.docker.com/engine/install/centos/
 ## Quick start
 Clone the GIT repository and start guacamole:
 
 ~~~bash
-git clone "https://github.com/boschkundendienst/guacamole-docker-compose.git"
+git clone "https://github.com/MrMavni/guacamole-docker-compose.git"
 cd guacamole-docker-compose
-./prepare.sh
-docker-compose up -d
+./deploy.sh
 ~~~
 
-Your guacamole server should now be available at `https://ip of your server:8443/`. The default username is `guacadmin` with password `guacadmin`.
+Your guacamole server should now be available at `https://<ip of your server>/`. The default username is `guacadmin` with password `guacadmin`.
+
+## Session Recording
+For session recording to work, you would need to add the recording path to each connection configuration like so:
+~~~bash
+${HISTORY_PATH}/${HISTORY_UUID}
+~~~
+![image](https://github.com/MrMavni/guacamole-docker-compose/assets/144116832/930021f0-a1ca-443f-b5a1-88613b564f76)
 
 ## Details
 To understand some details let's take a closer look at parts of the `docker-compose.yml` file:
