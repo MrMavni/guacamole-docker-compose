@@ -3,56 +3,57 @@
 # Path to your docker-compose.yml and initdb.sql file
 DOCKER_COMPOSE_FILE="docker-compose.yml"
 INITDB_SQL_FILE="./init/initdb.sql"
+ENV_FILE=".env"
+
+# Function to prompt for input with a default value
+prompt_for_input() {
+    read -p "$1 ($2): " value
+    echo ${value:-$2}
+}
 
 # Function to generate a safe password
 generate_safe_password() {
     tr -dc 'A-Za-z0-9_-' < /dev/urandom | head -c 16
 }
 
-# Function to generate password hash and salt
-generate_hash_and_salt() {
-    local password=$1
-    local salt=$(openssl rand -hex 32)
-    local hash=$(echo -n "$password$salt" | openssl dgst -sha256 -binary | openssl enc -base64)
-    echo "$hash $salt"
-}
+# Check if .env file exists
+if [ ! -f "$ENV_FILE" ]; then
+    echo ".env file not found, creating one..."
 
-# Declare associative array for credentials
-declare -A credentials
+    # Prompt for LDAP settings
+    LDAP_HOSTNAME=$(prompt_for_input "Enter LDAP Hostname" "ldap.example.com")
+    LDAP_USER_BASE_DN=$(prompt_for_input "Enter LDAP User Base DN" "ou=users,dc=example,dc=com")
+    LDAP_USERNAME_ATTRIBUTE=$(prompt_for_input "Enter LDAP Username Attribute" "uid")
+    LDAP_SEARCH_BIND_DN=$(prompt_for_input "Enter LDAP Search Bind DN" "cn=admin,dc=example,dc=com")
+    LDAP_SEARCH_BIND_PASSWORD=$(prompt_for_input "Enter LDAP Search Bind Password" "password")
+    #LDAP_CONFIG_BASE_DN=$(prompt_for_input "Enter LDAP Config Base DN" "ou=Guacamole,dc=example,dc=com")
 
-# Function to update the password in the docker-compose file
-update_password() {
-    local env_var=$1
-    local new_pass=$(generate_safe_password)
+    # Prompt for or generate Guacamole and PostgreSQL user passwords
+    GUACADMIN_PASSWORD=$(prompt_for_input "Enter Guacamole Admin Password" $(generate_safe_password))
+    POSTGRES_USER=$(prompt_for_input "Enter PostgreSQL Username" "guacamole_user")
+    POSTGRES_PASSWORD=$(prompt_for_input "Enter PostgreSQL Password" $(generate_safe_password))
 
-    # Store new password in credentials array
-    credentials[$env_var]=$new_pass
+    # Write settings to .env file
+    {
+        echo "LDAP_HOSTNAME=${LDAP_HOSTNAME}"
+        echo "LDAP_USER_BASE_DN=${LDAP_USER_BASE_DN}"
+        echo "LDAP_USERNAME_ATTRIBUTE=${LDAP_USERNAME_ATTRIBUTE}"
+        echo "LDAP_SEARCH_BIND_DN=${LDAP_SEARCH_BIND_DN}"
+        echo "LDAP_SEARCH_BIND_PASSWORD=${LDAP_SEARCH_BIND_PASSWORD}"
+        echo "LDAP_CONFIG_BASE_DN=${LDAP_CONFIG_BASE_DN}"
+        echo "GUACADMIN_PASSWORD=${GUACADMIN_PASSWORD}"
+        echo "POSTGRES_USER=guacamole_user"
+        echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
+    } > $ENV_FILE
 
-    # Update the password in the docker-compose file
-    #sed -i "s/${env_var}: '.*'/${env_var}: '${new_pass}'/" "$DOCKER_COMPOSE_FILE"
-    export GUACADMIN_PASSWORD=${credentials[GUACADMIN_PASSWORD]}
-}
-
-# Function to update the guacadmin password in the initdb.sql file
-update_guacadmin_password() {
-    local new_pass=$(generate_safe_password)
-    local hash_salt=($(generate_hash_and_salt "$new_pass"))
-
-    # Store new password in credentials array
-    credentials["GUACADMIN_PASSWORD"]=$new_pass
-
-    # Update the guacadmin password in the initdb.sql file
-    #sed -i "s/('guacadmin'.*decode(').*(', 'hex'),  -- 'guacadmin'/('guacadmin', decode('${hash_salt[0]}', 'base64'), decode('${hash_salt[1]}', 'hex'), CURRENT_TIMESTAMP)/" "$INITDB_SQL_FILE"
-    export POSTGRES_PASSWORD=${credentials[POSTGRES_PASSWORD]}
-    }
+    echo ".env file created."
+else
+    echo ".env file already exists, using existing file."
+fi
 
 # Run reset.sh script
 echo "Running reset.sh..."
 echo "y" | sudo ./reset.sh
-
-# Update passwords
-update_password "POSTGRES_PASSWORD"
-update_guacadmin_password
 
 # Run prepare.sh script
 echo "preparing Database and Folders"
@@ -88,6 +89,7 @@ sudo chmod -R 2750 ./record/
 
 # Print all generated credentials
 echo "Generated Credentials:"
-for key in "${!credentials[@]}"; do
-    echo "$key: ${credentials[$key]}"
+echo "POSTGRES_PASSWORD: ${credentials[POSTGRES_PASSWORD]}"
+echo "GUACADMIN_PASSWORD: ${credentials[GUACADMIN_PASSWORD]}"
+
 done
