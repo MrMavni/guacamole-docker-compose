@@ -16,34 +16,36 @@ generate_safe_password() {
     tr -dc 'A-Za-z0-9_-' < /dev/urandom | head -c 16
 }
 
+ # Automatically generate passwords
+    POSTGRES_PASSWORD=$(generate_safe_password)
+    GUACADMIN_PASSWORD=$(generate_safe_password)
+
 # Check if .env file exists
 if [ ! -f "$ENV_FILE" ]; then
     echo ".env file not found, creating one..."
 
-    # Prompt for LDAP settings
-    LDAP_HOSTNAME=$(prompt_for_input "Enter LDAP Hostname" "ldap.example.com")
-    LDAP_USER_BASE_DN=$(prompt_for_input "Enter LDAP User Base DN" "ou=users,dc=example,dc=com")
-    LDAP_USERNAME_ATTRIBUTE=$(prompt_for_input "Enter LDAP Username Attribute" "uid")
-    LDAP_SEARCH_BIND_DN=$(prompt_for_input "Enter LDAP Search Bind DN" "cn=admin,dc=example,dc=com")
-    LDAP_SEARCH_BIND_PASSWORD=$(prompt_for_input "Enter LDAP Search Bind Password" "password")
-    #LDAP_CONFIG_BASE_DN=$(prompt_for_input "Enter LDAP Config Base DN" "ou=Guacamole,dc=example,dc=com")
-
-    # Prompt for or generate Guacamole and PostgreSQL user passwords
-    GUACADMIN_PASSWORD=$(prompt_for_input "Enter Guacamole Admin Password" $(generate_safe_password))
-    POSTGRES_USER=$(prompt_for_input "Enter PostgreSQL Username" "guacamole_user")
-    POSTGRES_PASSWORD=$(prompt_for_input "Enter PostgreSQL Password" $(generate_safe_password))
+    # Prompt for required settings
+    LDAP_HOSTNAME=$(prompt_for_input "Enter LDAP_HOSTNAME" "10.0.1.10")
+    LDAP_USER_BASE_DN=$(prompt_for_input "Enter LDAP_USER_BASE_DN" "DC=example,DC=com")
+    LDAP_SEARCH_BIND_DN=$(prompt_for_input "Enter LDAP_SEARCH_BIND_DN" "CN=user,CN=Users,DC=example,DC=com")
+    LDAP_SEARCH_BIND_PASSWORD=$(prompt_for_input "Enter LDAP_SEARCH_BIND_PASSWORD" "Password")
+    LDAP_USERNAME_ATTRIBUTE=$(prompt_for_input "Enter LDAP_USERNAME_ATTRIBUTE" "sAMAccountName")
+    LDAP_GROUP_BASE_DN=$(prompt_for_input "Enter LDAP_GROUP_BASE_DN" "OU=Groups,DC=example,DC=com")
+    LDAP_USER_SEARCH_FILTER=$(prompt_for_input "Enter Base DN for AD Group" "CN=Guacamole-Users,OU=Groups,DC=example,DC=com")
 
     # Write settings to .env file
     {
+        echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
+        echo "POSTGRES_USER=guacamole_user"
+	echo "GUACADMIN_PASSWORD=${GUACADMIN_PASSWORD}"
         echo "LDAP_HOSTNAME=${LDAP_HOSTNAME}"
         echo "LDAP_USER_BASE_DN=${LDAP_USER_BASE_DN}"
-        echo "LDAP_USERNAME_ATTRIBUTE=${LDAP_USERNAME_ATTRIBUTE}"
         echo "LDAP_SEARCH_BIND_DN=${LDAP_SEARCH_BIND_DN}"
         echo "LDAP_SEARCH_BIND_PASSWORD=${LDAP_SEARCH_BIND_PASSWORD}"
-        echo "LDAP_CONFIG_BASE_DN=${LDAP_CONFIG_BASE_DN}"
-        echo "GUACADMIN_PASSWORD=${GUACADMIN_PASSWORD}"
-        echo "POSTGRES_USER=guacamole_user"
-        echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
+        echo "LDAP_USERNAME_ATTRIBUTE=${LDAP_USERNAME_ATTRIBUTE}"
+        echo "LDAP_GROUP_BASE_DN=${LDAP_GROUP_BASE_DN}"
+        echo "POSTGRESQL_AUTO_CREATE_ACCOUNTS=true"
+        echo "LDAP_USER_SEARCH_FILTER=(|(memberOf=${LDAP_USER_SEARCH_FILTER}))"
     } > $ENV_FILE
 
     echo ".env file created."
